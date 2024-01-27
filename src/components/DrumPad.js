@@ -9,47 +9,69 @@ class DrumPad extends React.Component{
 			currentAudio: null
 		}
 		this.handlerButton = this.handlerButton.bind(this);
+		this.handlerChangeDisplay = this.handlerChangeDisplay.bind(this);
+		this.handleKeyDown = this.handleKeyDown.bind(this);
 	}	
+
+	componentDidMount() {
+		document.addEventListener('keydown', this.handleKeyDown)
+	}
 	
-  handlerButton() {
+	componentWillUnmount() {
+		document.removeEventListener('keydown', this.handleKeyDown);
+	}
+
+	handleKeyDown(e) {
+		if (e.key.toLowerCase() === this.props.textPad.toLowerCase()) {
+		  document.getElementById(this.props.idPad).click();
+		}else {
+		}
+	}
+	
+  	handlerButton(audioCurrent) {
 		const handlerPower = this.props.handlerPower;
 		if (handlerPower){
 			
-			const { playing, currentAudio, numero } = this.state;
+			const { playing, currentAudio } = this.state;
 			const audioContext = this.props.contexto;
-			const audioElement = document.getElementById(`audio-${numero}`);
+			const audioElement = audioCurrent;
+			let volumen = (this.props.volumen)/100;
 			if (currentAudio) {
 				// Si hay un sonido en reproducción, detenlo
 				currentAudio.pause();
 				currentAudio.currentTime = 0;
-				audioElement.volume = this.props.volumen;
+				audioElement.volume = volumen;
 				audioElement.play();
 			}
 
 			if (audioContext.state === "suspended") {
 				audioContext.resume().then(() => {
 					if (!playing) {
-						audioElement.volume = this.props.volumen;
+						audioElement.volume = volumen;
 						audioElement.play();
 						this.setState({ playing: true, currentAudio: audioElement });
 					}
 				});
 			} else {
 				if (!playing) {
-					audioElement.volume = this.props.volumen;
+					audioElement.volume = volumen;
 					audioElement.play();
 					this.setState({ playing: true, currentAudio: audioElement });
 				}
 			}
-		}
-  }
+		}		
+	}
+
+	handlerChangeDisplay(){
+		this.props.handleDisplay(this.props.sound.name);
+	}
 
 	render(){
 		let numero = this.state.numero;
 		return(
-			<button className="drum-pad col-sm-3 btn btn-outline-secondary" onClick={this.handlerButton} id={this.props.idPad} data-playing={this.state.playing}  role="switch" aria-checked="false" >
+			<button className="drum-pad col-sm-3 btn btn-outline-secondary" onClick={(e) => {this.handlerButton(document.getElementById(`audio-${numero}`)); this.handlerChangeDisplay()}} id={this.props.idPad} data-playing={this.state.playing}  role="switch" aria-checked="false" >
 				{this.props.textPad} 
-				<audio src={this.props.sound} id={`audio-${numero}`} key={numero}></audio>
+				<audio src={this.props.sound.link} id={`audio-${numero}`} key={numero}></audio>
 			</button>);
 	}
 }
