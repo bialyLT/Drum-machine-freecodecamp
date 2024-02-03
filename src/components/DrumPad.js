@@ -37,7 +37,6 @@ class DrumPad extends React.Component{
 			const audioElement = audioCurrent;
 			let volumen = (this.props.volumen)/100;
 			if (currentAudio) {
-				// Si hay un sonido en reproducción, detenlo
 				currentAudio.pause();
 				currentAudio.currentTime = 0;
 				audioElement.volume = volumen;
@@ -69,12 +68,14 @@ class DrumPad extends React.Component{
 	render(){
 		let numero = this.state.numero;
 		return(
-			<button className="drum-pad col-sm-3 btn btn-outline-secondary" onClick={(e) => {this.handlerButton(document.getElementById(`audio-${numero}`)); this.handlerChangeDisplay()}} id={this.props.idPad} data-playing={this.state.playing}  role="switch" aria-checked="false" >
+			<button className="drum-pad col-sm-3 btn btn-outline-secondary" onClick={(e) => {this.handlerButton(document.getElementById(this.props.textPad)); this.handlerChangeDisplay()}} id={this.props.idPad} data-playing={this.state.playing}  role="switch" aria-checked="false" >
 				{this.props.textPad} 
-				<audio src={this.props.sound.link} id={`audio-${numero}`} key={numero}></audio>
+				<audio src={this.props.sound.link} id={this.props.textPad} key={numero} className="clip"></audio>
 			</button>);
 	}
 }
+
+
 
 
 export default DrumPad;
